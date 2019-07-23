@@ -1,0 +1,239 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 0.001;
+
+// Geometrical parameters
+halfAngle #calc "degToRad(2.5)";
+c350 #calc "cos($halfAngle)*350";
+s350 #calc "sin($halfAngle)*350";
+c73 #calc "cos($halfAngle)*73.66";
+s73 #calc "sin($halfAngle)*73.66";
+c31 #calc "cos($halfAngle)*31.75";
+s31 #calc "sin($halfAngle)*31.75";
+
+ns350 #calc "sin(-$halfAngle)*350";
+ns73 #calc "sin(-$halfAngle)*73.66";
+ns31 #calc "sin(-$halfAngle)*31.75";
+
+// Element grading parameters
+RefPara 1.5;
+ExtraEl 1;
+
+X1 #calc "$RefPara*12";
+Z1 #calc "$RefPara*74";
+
+X2 #calc "$RefPara*14";
+Z2 #calc "$RefPara*74";
+
+X3 #calc "$ExtraEl*$RefPara*92";
+Z3 #calc "$RefPara*74";
+
+X4 #calc "$RefPara*14";
+Z4 #calc "$RefPara*24";
+
+X5 #calc "$ExtraEl*$RefPara*92";
+Z5 #calc "$RefPara*24";
+
+X6 #calc "$ExtraEl*$RefPara*92";
+Z6 #calc "3.5*$RefPara*24";
+
+X7 #calc "4*$ExtraEl*$RefPara*24";
+Z7 #calc "$RefPara*74";
+
+X8 #calc "$ExtraEl*$RefPara*92";
+Z8 #calc "$RefPara*74";
+
+vertices
+(
+	// Main control volume
+	(800 0 0)
+	(0 $s350 $c350)
+	(0 $ns350 $c350)
+	(800 $ns350 $c350)
+	(800 $s350 $c350)
+	
+	(0 0 0)
+	// GHV
+	(501.6 0 0)
+	(501.6 $s73 $c73)
+	(501.6 $ns73 $c73)
+	(400 $s73 $c73)
+
+	(400 $ns73 $c73)
+	(400 $s31 $c31)
+	(400 $ns31 $c31)
+	(300 $s31 $c31)
+	(300 $ns31 $c31)
+
+	(300 0 0)
+	// Auxiliary points: refining surfaces
+	(501.6 $s350 $c350)
+	(501.6 $ns350 $c350)
+	(400 $s350 $c350)
+	(400 $ns350 $c350)
+	
+	(300 $s350 $c350)
+	(300 $ns350 $c350)
+
+	(0 $s73  $c73)
+	(0 $ns73  $c73)
+	(800 $s73 $c73)
+
+	(800 $ns73 $c73)
+	(300 $s73 $c73)
+	(300 $ns73 $c73)
+	(0 $s31 $c31)
+	(0 $ns31 $c31)
+);
+
+blocks
+( // Ordered from lower Z to higher Z
+
+	// Wake
+    	hex (5 28 29 5 15 13 14 15) ($X1 1 $Z1) simpleGrading (1 1 1)
+	hex (28 22 23 29 13 26 27 14) ($X2 1 $Z2) simpleGrading (1 1 1)
+	hex (22 1 2 23 26 20 21 27) ($X3 1 $Z3) simpleGrading (10 1 1)
+	
+	// Rear-Body
+	hex (13 26 27 14 11 9 10 12) ($X4 1 $Z4) simpleGrading (1 1 1)
+	hex (26 20 21 27 9 18 19 10) ($X5 1 $Z5) simpleGrading (10 1 1)
+	
+	// Upper-body
+	hex (9 18 19 10 7 16 17 8) ($X6 1 $Z6) simpleGrading (10 1 1)
+	
+	// Freestream
+	hex (6 7 8 6 0 24 25 0) ($X7 1 $Z7) simpleGrading (1 1 10)
+	hex (7 16 17 8 24 4 3 25) ($X8 1 $Z8) simpleGrading (10 1 10)
+);
+
+edges
+(
+	arc 3 4 (800 0 350)
+	arc 17 16 (501.6 0 350)
+	arc 19 18 (400 0 350)
+	arc 21 20 (300 0 350)
+	arc 8 7 (501.6 0 73.66)
+	arc 10 9 (400 0 73.66)
+	arc 12 11 (400 0 31.75)
+	arc 14 13 (300 0 31.75)
+	arc 2 1 (0 0 350)
+);
+
+boundary
+(
+    axis
+    {
+        type empty;
+        faces
+        (
+			(5 15 15 5)
+			(6 0 0 6)
+        );
+    }
+
+
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 0 25 24)
+			(24 25 3 4)
+        );
+    }
+
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (5 5 29 28)
+			(28 29 23 22)
+			(22 23 2 1)
+        );
+    }
+
+    top
+    {
+        type patch;
+        faces
+        (
+			(1 20 21 2)
+			(20 18 19 21)
+			(18 16 17 19)
+			(16 4 3 17)			
+        );
+    }
+
+    wedge0
+    {
+        type wedge;
+        faces
+        (
+            (0 25 8 6)
+			(25 3 17 8)
+
+			(8 17 19 10)
+
+			(12 10 27 14)
+			(10 19 21 27)
+
+			(15 14 29 5)		
+			(14 27 23 29)	
+			(27 21 2 23)	
+        );
+    }
+
+    wedge1
+    {
+        type wedge;
+        faces
+        (
+            (0 24 7 6)
+			(24 4 16 7)
+
+			(7 16 18 9)
+
+			(11 9 26 13)
+			(9 18 20 26)
+
+			(15 13 28 5)	
+			(13 26 22 28)
+			(26 20 1 22)				
+        );
+    }
+
+
+    ghv
+    {
+        type patch;
+        faces
+        (
+			(15 15 14 13)
+			(11 12 14 13)
+			(9 11 12 10)
+			(7 8 10 9)
+            (6 6 8 7)			
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

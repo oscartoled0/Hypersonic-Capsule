@@ -1,0 +1,46 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Depending on each Mach number, for model A:
+//
+// M = 6.02, Pinf = 479.1837, Tinf = 57.2524, Uinf = (-913.0579 0 0)
+// M = 8.00, Pinf = 307.2073, Tinf = 51.9324, Uinf = (-1155.6176 0 0)
+// M = 10.12, Pinf = 180.0431, Tinf = 47.7124, Uinf = (-1401.2032 0 0)
+
+defaultFieldValues
+(
+    volVectorFieldValue U (-1401.2032 0 0)
+    volScalarFieldValue T 47.7124
+    volScalarFieldValue p 180.0431
+);
+
+regions
+(
+    boxToCell
+    {
+        box (0 -8.723877 0) (800 8.723877 199.8096);
+        fieldValues
+        (
+			volVectorFieldValue U (-1401.2032 0 0)
+            volScalarFieldValue T 47.7124
+            volScalarFieldValue p 180.0431
+        );
+    }
+);
+
+
+// ************************************************************************* //

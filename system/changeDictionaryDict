@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+boundary
+{
+	axis
+	{
+		type			empty;
+	}
+    wedge0
+    {
+        type 			wedge;
+    }
+    wedge1
+    {
+        type wedge;
+    }
+    ghv
+    {
+        type patch;
+    }
+    outlet
+    {
+        type patch;
+    }
+    inlet
+    {
+        type patch;
+    }
+    top
+    {
+        type patch;
+    }
+}
+
